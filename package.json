@@ -1,0 +1,78 @@
+{
+  "name": "cusco",
+  "version": "1.0.0",
+  "description": "Cusco - Node + Angular scaffold",
+  "private": true,
+  "workspaces": [
+    "src/api",
+    "src/frontend"
+  ],
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "scripts": {
+    "start": "docker compose up -d",
+    "stop": "docker compose down",
+    "restart": "docker compose restart",
+    "logs": "docker compose logs -f",
+    "logs:api": "docker compose logs -f api",
+    "logs:frontend": "docker compose logs -f frontend",
+
+    "dev": "docker compose up -d && docker compose logs -f api frontend",
+    "build": "npm run build:api && npm run build:frontend",
+    "build:api": "docker compose exec api npm run build",
+    "build:frontend": "docker compose exec frontend npx ng build --configuration=production",
+
+    "docker:rebuild": "docker compose down && docker compose build --no-cache && docker compose up -d",
+    "docker:clean": "docker compose down -v --remove-orphans",
+    "docker:status": "docker compose ps",
+
+    "api:shell": "docker compose exec api sh",
+    "frontend:shell": "docker compose exec frontend sh",
+    "db:shell": "docker compose exec db psql -U ${DB_USER:-cusco} -d ${DB_NAME:-cusco}",
+
+    "prisma:generate": "docker compose exec api npx prisma generate",
+    "prisma:migrate": "docker compose exec api npx prisma migrate dev",
+    "prisma:migrate:prod": "docker compose exec api npx prisma migrate deploy",
+    "prisma:studio": "docker compose exec api npx prisma studio",
+    "prisma:seed": "docker compose exec api npx prisma db seed",
+    "prisma:reset": "docker compose exec api npx prisma migrate reset",
+
+    "db:backup": "docker compose exec db pg_dump -U ${DB_USER:-cusco} ${DB_NAME:-cusco} > backups/$(date +%Y%m%d_%H%M%S).sql",
+    "db:restore": "docker compose exec -T db psql -U ${DB_USER:-cusco} ${DB_NAME:-cusco}",
+
+    "lint": "npm run lint:api && npm run lint:frontend",
+    "lint:api": "docker compose exec api npm run lint",
+    "lint:frontend": "docker compose exec frontend npx ng lint",
+    "lint:fix": "npm run lint:fix:api && npm run lint:fix:frontend",
+    "lint:fix:api": "docker compose exec api npm run lint -- --fix",
+    "lint:fix:frontend": "docker compose exec frontend npx ng lint --fix",
+
+    "test": "npm run test:api && npm run test:frontend",
+    "test:api": "docker compose exec api npm run test",
+    "test:frontend": "docker compose exec frontend npx ng test --watch=false",
+    "test:e2e": "docker compose exec api npm run test:e2e",
+
+    "prettier": "prettier --check \"src/**/*.{ts,html,scss,json}\"",
+    "prettier:write": "prettier --write \"src/**/*.{ts,html,scss,json}\"",
+
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.0.0",
+    "@commitlint/config-conventional": "^19.0.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.0.0"
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "src/**/*.{html,scss,json}": [
+      "prettier --write"
+    ]
+  }
+}

@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+build/
+.angular/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Docker
+docker-compose.override.yml
+
+# SSL Certificates
+certs/
+
+# Database backups
+backups/*.sql
+
+# Coverage
+coverage/
+
+# Prisma
+src/api/prisma/*.db
+src/api/prisma/*.db-journal
+
+# Misc
+*.tgz
+.cache/
