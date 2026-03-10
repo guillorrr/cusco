@@ -43,6 +43,9 @@ coverage/
 src/api/prisma/*.db
 src/api/prisma/*.db-journal
 
+# Storybook
+storybook-static/
+
 # Misc
 *.tgz
 .cache/

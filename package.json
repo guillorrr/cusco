@@ -18,8 +18,11 @@
     "logs": "docker compose logs -f",
     "logs:api": "docker compose logs -f api",
     "logs:frontend": "docker compose logs -f frontend",
+    "logs:storybook": "docker compose logs -f storybook",
 
     "dev": "docker compose up -d && docker compose logs -f api frontend",
+    "storybook": "docker compose up -d storybook && docker compose logs -f storybook",
+    "storybook:build": "docker compose exec storybook npm run storybook:build",
     "build": "npm run build:api && npm run build:frontend",
     "build:api": "docker compose exec api npm run build",
     "build:frontend": "docker compose exec frontend npx ng build --configuration=production",

@@ -10,7 +10,8 @@ Cusco is a production-ready monorepo scaffold for full-stack TypeScript applicat
 - **Frontend**: Angular 19 (standalone components, signals) — `src/frontend/`
 - **Database**: PostgreSQL 16 + Prisma ORM
 - **Cache**: Redis 7
-- **Containerization**: Docker Compose (7 services)
+- **Component Library**: Storybook 8 — `src/frontend/.storybook/`
+- **Containerization**: Docker Compose (8 services)
 - **Package Management**: npm workspaces (root + api + frontend)
 
 ## Architecture
@@ -80,6 +81,13 @@ shared/         → Shared pipes, directives
 3. Run: `npx prisma migrate dev --name add-{name}`
 4. Import module in `app.module.ts`
 
+### Adding a New Component (Storybook workflow)
+
+1. Create the component in the appropriate Atomic Design level (`atoms/`, `molecules/`, `organisms/`)
+2. Create a co-located `.stories.ts` file next to the component
+3. Develop and preview in Storybook (`npm run storybook`) independently from the app
+4. Once validated with UX/UI, integrate into pages
+
 ### Adding a New Angular Page
 
 1. Create component in `src/frontend/src/app/pages/{name}/`
@@ -98,6 +106,8 @@ npm run lint                # lint both api + frontend
 npm run test                # test both api + frontend
 npm run build               # production build
 npm run docker:rebuild      # full rebuild from scratch
+npm run storybook           # launch Storybook (port 6006)
+npm run storybook:build     # build static Storybook
 ```
 
 ## API
@@ -112,6 +122,7 @@ npm run docker:rebuild      # full rebuild from scratch
 |------------|-------|--------------------|
 | api        | 3000  | NestJS backend     |
 | frontend   | 4200  | Angular dev server |
+| storybook  | 6006  | Component library  |
 | nginx      | 80/443| Reverse proxy      |
 | db         | 5432  | PostgreSQL         |
 | redis      | 6379  | Cache              |
@@ -126,3 +137,4 @@ npm run docker:rebuild      # full rebuild from scratch
 - `src/api/src/app.module.ts` — Backend root module
 - `src/frontend/src/app/app.routes.ts` — Frontend routing
 - `src/frontend/src/app/app.config.ts` — Angular providers
+- `src/frontend/.storybook/main.ts` — Storybook configuration

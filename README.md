@@ -13,6 +13,7 @@ Scaffold para proyectos full-stack **Node.js + Angular** con arquitectura limpia
 | Proxy      | Nginx (SSL con mkcert)                 |
 | Email      | Mailhog (testing)                      |
 | DB UI      | pgAdmin 4                              |
+| Componentes| Storybook 8                             |
 | Contenedor | Docker Compose                         |
 | Monorepo   | npm workspaces                         |
 
@@ -53,6 +54,9 @@ cusco/
 │   │           └── interfaces/      #   Interfaces TypeScript
 │   │
 │   └── frontend/                    # Frontend Angular
+│       ├── .storybook/              # Configuración Storybook
+│       │   ├── main.ts              #   Framework y addons
+│       │   └── preview.ts           #   Estilos globales y parámetros
 │       └── src/app/
 │           ├── atoms/               # Elementos básicos (botones, inputs)
 │           ├── molecules/           # Combinaciones de atoms (cards, formularios)
@@ -68,7 +72,7 @@ cusco/
 │               ├── models/          #   Interfaces TypeScript
 │               └── styles/          #   SCSS global (variables, base, tipografía)
 │
-├── docker-compose.yml               # Orquestación (7 servicios)
+├── docker-compose.yml               # Orquestación (8 servicios)
 ├── package.json                     # Root workspace
 ├── .env.example                     # Variables de entorno
 ├── .prettierrc                      # Configuración Prettier
@@ -87,6 +91,7 @@ cusco/
 - **Module-per-feature**: cada entidad de dominio se encapsula en su propio módulo NestJS con controller, service y DTOs
 - **DTO validation**: validación de datos de entrada con `class-validator` en los DTOs, aplicada globalmente vía `ValidationPipe`
 - **Path aliases**: `@core/*`, `@modules/*`, `@common/*` en el backend; `@atoms/*`, `@molecules/*`, `@pages/*`, `@core/*` en el frontend
+- **Storybook**: desarrollo y validación de componentes UI de forma aislada, independiente del estado de la app y del backend
 
 ## Inicio rápido
 
@@ -121,6 +126,7 @@ npm run prisma:seed
 | Frontend | https://cusco.local (o http://localhost:4200) |
 | API | https://cusco.local/api/v1 (o http://localhost:3000/api/v1) |
 | Swagger docs | http://localhost:3000/api/docs |
+| Storybook | http://localhost:6006 |
 | pgAdmin | http://localhost:8082 |
 | Mailhog | http://localhost:8025 |
 
@@ -140,6 +146,14 @@ npm run logs:frontend        # Ver logs del frontend
 npm run docker:rebuild       # Reconstruir todo desde cero
 npm run docker:clean         # Eliminar todo (volúmenes incluidos)
 npm run docker:status        # Estado de los servicios
+```
+
+### Storybook
+
+```bash
+npm run storybook            # Levantar Storybook (puerto 6006)
+npm run storybook:build      # Build estático de Storybook
+npm run logs:storybook       # Ver logs de Storybook
 ```
 
 ### Base de datos (Prisma)
@@ -205,22 +219,33 @@ npm run prisma:migrate
 
 ### Crear componentes Angular (Atomic Design)
 
-Los componentes se organizan por nivel de complejidad:
+Los componentes se organizan por nivel de complejidad. Cada componente debe tener un archivo `.stories.ts` co-localizado para desarrollo y validación en Storybook:
 
 ```bash
 # Atom — elemento básico reutilizable
 docker compose exec frontend npx ng g c atoms/button --standalone
+# Crear: src/app/atoms/button/button.stories.ts
 
 # Molecule — combinación de atoms
 docker compose exec frontend npx ng g c molecules/card --standalone
+# Crear: src/app/molecules/card/card.stories.ts
 
 # Organism — sección compleja de UI
 docker compose exec frontend npx ng g c organisms/header --standalone
+# Crear: src/app/organisms/header/header.stories.ts
 
 # Page — componente a nivel de ruta
 docker compose exec frontend npx ng g c pages/products --standalone
-# Luego añadir la ruta en app.routes.ts (lazy-loaded)
+# Añadir la ruta en app.routes.ts (lazy-loaded)
 ```
+
+### Workflow de maquetación con Storybook
+
+1. Crear el componente en el nivel Atomic Design correspondiente
+2. Crear el archivo `.stories.ts` junto al componente
+3. Desarrollar y previsualizar en Storybook (`npm run storybook`) sin depender de backend ni datos reales
+4. Validar con UX/UI en http://localhost:6006
+5. Integrar el componente en las páginas de la app
 
 ### Crear un servicio Angular
 
@@ -241,6 +266,15 @@ refactor(api): extract pagination logic to helper
 chore(docker): update Node image to v20
 docs(readme): add deployment instructions
 test(users): add unit tests for users service
+```
+
+### Estructura de un componente Angular con Story
+
+```
+atoms/{name}/
+├── {name}.component.ts      # Componente standalone
+├── {name}.component.scss    # Estilos (opcional)
+└── {name}.stories.ts        # Storybook stories
 ```
 
 ### Estructura de un módulo NestJS

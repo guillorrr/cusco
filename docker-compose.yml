@@ -78,6 +78,26 @@ services:
       - ${APP_NAME}-network
 
   # ---------------------------------------------------------------------------
+  # Storybook - Component Library
+  # ---------------------------------------------------------------------------
+  storybook:
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile
+    container_name: ${APP_NAME}-storybook
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+    ports:
+      - "${FORWARD_STORYBOOK_PORT:-6006}:6006"
+    volumes:
+      - ./src/frontend:/app
+      - frontend-node-modules:/app/node_modules
+    command: npm run storybook
+    networks:
+      - ${APP_NAME}-network
+
+  # ---------------------------------------------------------------------------
   # Nginx - Reverse Proxy
   # ---------------------------------------------------------------------------
   nginx:
