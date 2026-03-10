@@ -7,10 +7,10 @@ Cusco is a production-ready monorepo scaffold for full-stack TypeScript applicat
 ## Tech Stack
 
 - **Backend**: NestJS (TypeScript) — `src/api/`
-- **Frontend**: Angular 19 (standalone components, signals) — `src/frontend/`
+- **Frontend**: Angular 21 (standalone components, signals) — `src/frontend/`
 - **Database**: PostgreSQL 16 + Prisma ORM
 - **Cache**: Redis 7
-- **Component Library**: Storybook 8 — `src/frontend/.storybook/`
+- **Component Library**: Storybook 10 — `src/frontend/.storybook/`
 - **Containerization**: Docker Compose (8 services)
 - **Package Management**: npm workspaces (root + api + frontend)
 

@@ -48,6 +48,43 @@
           },
           "defaultConfiguration": "production"
         },
+        "storybook-build": {
+          "builder": "@angular-devkit/build-angular:browser-esbuild",
+          "options": {
+            "outputPath": "dist/storybook",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "tsconfig.storybook.json",
+            "assets": [
+              { "glob": "**/*", "input": "public" }
+            ],
+            "styles": [
+              "node_modules/bootstrap/scss/bootstrap.scss",
+              "src/styles.scss"
+            ],
+            "scripts": []
+          }
+        },
+        "storybook": {
+          "builder": "@storybook/angular:start-storybook",
+          "options": {
+            "configDir": ".storybook",
+            "browserTarget": "cusco:storybook-build",
+            "compodoc": false,
+            "port": 6006,
+            "host": "0.0.0.0"
+          }
+        },
+        "build-storybook": {
+          "builder": "@storybook/angular:build-storybook",
+          "options": {
+            "configDir": ".storybook",
+            "browserTarget": "cusco:storybook-build",
+            "compodoc": false,
+            "outputDir": "storybook-static"
+          }
+        },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {

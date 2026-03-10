@@ -7,13 +7,13 @@ Scaffold para proyectos full-stack **Node.js + Angular** con arquitectura limpia
 | Capa       | Tecnología                              |
 |------------|----------------------------------------|
 | Backend    | NestJS + TypeScript                    |
-| Frontend   | Angular 19 (standalone, signals)       |
+| Frontend   | Angular 21 (standalone, signals)       |
 | Base datos | PostgreSQL 16 + Prisma ORM             |
 | Cache      | Redis 7                                |
 | Proxy      | Nginx (SSL con mkcert)                 |
 | Email      | Mailhog (testing)                      |
 | DB UI      | pgAdmin 4                              |
-| Componentes| Storybook 8                             |
+| Componentes| Storybook 10                            |
 | Contenedor | Docker Compose                         |
 | Monorepo   | npm workspaces                         |
 

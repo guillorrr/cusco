@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/storybook",
+    "types": [],
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "moduleResolution": "bundler"
+  },
+  "files": ["src/main.ts", ".storybook/preview.ts"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    ".storybook/**/*.ts"
+  ],
+  "exclude": [
+    "src/**/*.spec.ts"
+  ]
+}
