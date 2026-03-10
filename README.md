@@ -24,8 +24,9 @@ El proyecto sigue una **arquitectura por capas** en el backend y **Atomic Design
 ```
 cusco/
 ├── docker/                          # Dockerfiles y configuración
-│   ├── api/Dockerfile               # Node 20 Alpine para NestJS
-│   ├── frontend/Dockerfile          # Node 20 Alpine + Angular CLI
+│   ├── api/Dockerfile               # Node 22 Alpine para NestJS
+│   ├── frontend/Dockerfile          # Node 22 Alpine + Angular CLI
+│   ├── storybook/Dockerfile         # Node 22 Alpine + Storybook dedicado
 │   ├── nginx/templates/             # Reverse proxy con SSL
 │   ├── db/init/                     # Scripts inicialización PostgreSQL
 │   └── mkcert/Dockerfile            # Generación certificados SSL
@@ -72,6 +73,8 @@ cusco/
 │               ├── models/          #   Interfaces TypeScript
 │               └── styles/          #   SCSS global (variables, base, tipografía)
 │
+├── scripts/
+│   └── clean-scaffolding.sh         # Limpieza de ejemplos para forks
 ├── docker-compose.yml               # Orquestación (8 servicios)
 ├── package.json                     # Root workspace
 ├── .env.example                     # Variables de entorno
@@ -186,6 +189,52 @@ npm run api:shell            # Shell dentro del contenedor API
 npm run frontend:shell       # Shell dentro del contenedor Frontend
 npm run db:shell             # Consola PostgreSQL
 ```
+
+## Uso como scaffold (forks)
+
+Cusco incluye código de ejemplo funcional (módulos de auth/users, componentes UI, stories) para mostrar la arquitectura en acción. Cuando hagas un fork para un proyecto nuevo, el script `clean-scaffolding` elimina todo el contenido de ejemplo y deja la estructura lista para tu dominio.
+
+### Cómo funciona
+
+El script compara tu fork contra el repositorio upstream de Cusco usando git. Esto permite:
+
+- **Archivos de upstream** (ejemplos del scaffold): se eliminan
+- **Archivos nuevos del fork** (tu código): se preservan automáticamente
+- **Archivos de upstream modificados**: se pregunta antes de eliminar
+
+### Uso
+
+```bash
+# Preview sin cambios (recomendado primero)
+npm run clean:scaffolding -- --dry-run
+
+# Interactivo — pregunta antes de actuar
+npm run clean:scaffolding
+
+# Automático — elimina todo el scaffolding sin preguntar
+npm run clean:scaffolding -- --yes
+
+# Detallado — muestra archivos del fork que se preservan
+npm run clean:scaffolding -- --dry-run --verbose
+```
+
+### Qué elimina
+
+| Capa | Contenido de ejemplo |
+|------|---------------------|
+| Backend | `modules/users/`, `modules/auth/`, `prisma/seed.ts` |
+| Frontend | `atoms/button/`, `atoms/input/`, `molecules/card/`, `molecules/form-field/` |
+| Pages | `pages/home/`, `pages/login/` |
+| Core | `auth.service`, `auth.guard`, `auth.interceptor`, `user.model` |
+
+Adicionalmente reconstruye con stubs limpios: `app.module.ts`, `schema.prisma`, `app.routes.ts` y `app.config.ts`.
+
+### Variables de entorno
+
+| Variable | Default | Descripción |
+|----------|---------|-------------|
+| `CUSCO_UPSTREAM_URL` | `git@github.com:guillorrr/cusco.git` | URL del repo upstream |
+| `CUSCO_UPSTREAM_BRANCH` | `main` | Branch de upstream |
 
 ## Cómo extender
 
