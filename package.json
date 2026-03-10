@@ -60,6 +60,8 @@
     "prettier": "prettier --check \"src/**/*.{ts,html,scss,json}\"",
     "prettier:write": "prettier --write \"src/**/*.{ts,html,scss,json}\"",
 
+    "clean:scaffolding": "bash scripts/clean-scaffolding.sh",
+
     "prepare": "husky"
   },
   "devDependencies": {
