@@ -83,7 +83,7 @@ services:
   storybook:
     build:
       context: .
-      dockerfile: docker/frontend/Dockerfile
+      dockerfile: docker/storybook/Dockerfile
     container_name: ${APP_NAME}-storybook
     restart: unless-stopped
     environment:
@@ -91,9 +91,8 @@ services:
     ports:
       - "${FORWARD_STORYBOOK_PORT:-6006}:6006"
     volumes:
-      - ./src/frontend:/app
-      - frontend-node-modules:/app/node_modules
-    command: npm run storybook
+      - ./src/frontend/src:/app/src:ro
+      - ./src/frontend/.storybook:/app/.storybook:ro
     networks:
       - ${APP_NAME}-network
 

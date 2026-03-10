@@ -5,15 +5,13 @@ WORKDIR /app
 # Install Angular CLI globally
 RUN npm install -g @angular/cli
 
-# Copy package files
+# Copy package files and install dependencies
 COPY src/frontend/package*.json ./
-
-# Install dependencies
 RUN npm install
 
 # Copy source code
 COPY src/frontend/ .
 
-EXPOSE 4200
+EXPOSE 6006
 
-CMD ["npx", "ng", "serve", "--host", "0.0.0.0", "--poll", "2000"]
+CMD ["ng", "run", "cusco:storybook"]
