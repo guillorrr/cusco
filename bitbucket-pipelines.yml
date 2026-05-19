@@ -1,0 +1,111 @@
+# =============================================================================
+# Pipeline: cusco scaffold (NestJS + Angular monorepo)
+#
+# Quality gates only. This intentionally does NOT include a deploy step —
+# every fork ships in a different environment. Add deploy steps on top of
+# this file once the target environment is known.
+#
+# Strategy:
+#   - pull-requests: install once, then run lint + test + build for both
+#     workspaces in parallel.
+#   - main / develop: same gates, plus build artifacts kept for download.
+#
+# Variables expected: none for the base pipeline. Deploy steps added by
+# downstream forks should consume their own variables.
+# =============================================================================
+
+image: node:22-bullseye
+
+clone:
+  depth: full
+
+options:
+  max-time: 20
+
+definitions:
+  caches:
+    npm: ~/.npm
+
+  steps:
+    - step: &install
+        name: Install workspaces
+        caches:
+          - npm
+        script:
+          - set -eu
+          - npm ci --workspaces --include-workspace-root
+        artifacts:
+          - node_modules/**
+          - src/api/node_modules/**
+          - src/frontend/node_modules/**
+
+    - step: &lint-api
+        name: Lint api
+        caches:
+          - npm
+        script:
+          - set -eu
+          - npm --workspace src/api run lint
+
+    - step: &lint-frontend
+        name: Lint frontend
+        caches:
+          - npm
+        script:
+          - set -eu
+          - npm --workspace src/frontend run lint
+
+    - step: &test-api
+        name: Test api
+        caches:
+          - npm
+        script:
+          - set -eu
+          - npm --workspace src/api run test -- --ci --runInBand
+
+    - step: &build-api
+        name: Build api
+        caches:
+          - npm
+        script:
+          - set -eu
+          - npx --workspace src/api prisma generate
+          - npm --workspace src/api run build
+
+    - step: &build-frontend
+        name: Build frontend
+        caches:
+          - npm
+        script:
+          - set -eu
+          - npm --workspace src/frontend run build -- --configuration=production
+
+pipelines:
+  pull-requests:
+    '**':
+      - step: *install
+      - parallel:
+          - step: *lint-api
+          - step: *lint-frontend
+          - step: *test-api
+          - step: *build-api
+          - step: *build-frontend
+
+  branches:
+    main:
+      - step: *install
+      - parallel:
+          - step: *lint-api
+          - step: *lint-frontend
+          - step: *test-api
+          - step: *build-api
+          - step: *build-frontend
+
+    develop:
+      - step: *install
+      - parallel:
+          - step: *lint-api
+          - step: *lint-frontend
+          - step: *test-api
+          - step: *build-api
+          - step: *build-frontend
