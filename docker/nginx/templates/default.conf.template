@@ -25,11 +25,18 @@ server {
     ssl_certificate     /etc/nginx/certs/${DOMAIN}.pem;
     ssl_certificate_key /etc/nginx/certs/${DOMAIN}-key.pem;
 
+    # Request body size (set via CLIENT_MAX_BODY_SIZE env var).
+    client_max_body_size ${CLIENT_MAX_BODY_SIZE};
+
     # Security headers
     add_header X-Frame-Options "SAMEORIGIN" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-XSS-Protection "1; mode=block" always;
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    # Injected via envsubst from docker-compose (empty in dev; block on cloud).
+    # Use this to gate paths like /api/docs at the edge per environment.
+    ${SWAGGER_EDGE_POLICY}
 
     # API proxy
     location /api {

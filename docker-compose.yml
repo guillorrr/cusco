@@ -117,6 +117,8 @@ services:
       DOMAIN: ${DOMAIN}
       API_PORT: 3000
       FRONTEND_PORT: 4200
+      CLIENT_MAX_BODY_SIZE: ${CLIENT_MAX_BODY_SIZE:-32M}
+      SWAGGER_EDGE_POLICY: ""
     networks:
       - ${APP_NAME}-network
 
