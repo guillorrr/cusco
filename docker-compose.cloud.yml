@@ -1,0 +1,7 @@
+services:
+  api:
+    # En entornos desplegados el volumen nombrado api-node-modules persiste
+    # entre rebuilds, por lo que el cliente de Prisma puede quedar desfasado
+    # respecto al schema. Regenerarlo y aplicar migraciones en cada arranque
+    # mantiene el contenedor coherente con la BD sin depender del pipeline.
+    command: sh -c "npx prisma generate && npx prisma migrate deploy && npm run start:dev"
