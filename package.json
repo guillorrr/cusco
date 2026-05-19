@@ -40,6 +40,7 @@
     "prisma:migrate:prod": "docker compose exec api npx prisma migrate deploy",
     "prisma:studio": "docker compose exec api npx prisma studio",
     "prisma:seed": "docker compose exec api npx prisma db seed",
+    "prisma:seed:admin": "docker compose exec api npx ts-node prisma/seed-admin.ts",
     "prisma:reset": "docker compose exec api npx prisma migrate reset",
 
     "db:backup": "docker compose exec db pg_dump -U ${DB_USER:-cusco} ${DB_NAME:-cusco} > backups/$(date +%Y%m%d_%H%M%S).sql",
