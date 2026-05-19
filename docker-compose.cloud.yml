@@ -5,3 +5,9 @@ services:
     # respecto al schema. Regenerarlo y aplicar migraciones en cada arranque
     # mantiene el contenedor coherente con la BD sin depender del pipeline.
     command: sh -c "npx prisma generate && npx prisma migrate deploy && npm run start:dev"
+
+  nginx:
+    environment:
+      # Bloquea Swagger (UI + /api/docs-json, etc.) en el edge en entornos
+      # desplegados. En local queda vacía y Swagger se sirve normalmente.
+      SWAGGER_EDGE_POLICY: "location /api/docs { return 404; }"
