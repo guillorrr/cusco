@@ -33,7 +33,10 @@ definitions:
           - npm
         script:
           - set -eu
-          - npm ci --workspaces --include-workspace-root
+          # Cusco doesn't ship a root package-lock.json yet, so use `npm install`
+          # (resilient with or without a lock). Switch to `npm ci` once a root
+          # lock is committed for reproducible builds.
+          - npm install --legacy-peer-deps --ignore-scripts --workspaces --include-workspace-root
         artifacts:
           - node_modules/**
           - src/api/node_modules/**
