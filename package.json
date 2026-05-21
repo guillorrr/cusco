@@ -73,9 +73,13 @@
     "prettier": "^3.0.0"
   },
   "lint-staged": {
-    "src/**/*.ts": [
+    "src/api/**/*.ts": [
       "prettier --write",
-      "eslint --fix"
+      "bash -c 'cd src/api && npx eslint --fix'"
+    ],
+    "src/frontend/**/*.ts": [
+      "prettier --write",
+      "bash -c 'cd src/frontend && npx eslint --fix'"
     ],
     "src/**/*.{html,scss,json}": [
       "prettier --write"
