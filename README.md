@@ -96,6 +96,17 @@ cusco/
 - **Path aliases**: `@core/*`, `@modules/*`, `@common/*` en el backend; `@atoms/*`, `@molecules/*`, `@pages/*`, `@core/*` en el frontend
 - **Storybook**: desarrollo y validación de componentes UI de forma aislada, independiente del estado de la app y del backend
 
+## Documentación
+
+La carpeta [`docs/`](docs/) tiene la documentación extendida y explicada, pensada para
+quien nunca usó NestJS, Prisma, Swagger o Angular:
+
+- [Arquitectura](docs/ARCHITECTURE.md) · [Setup y desarrollo](docs/DEVELOPMENT.md) · [Docker](docs/DOCKER.md)
+- [Storybook](docs/STORYBOOK.md) · [Roles y guards](docs/ROLES.md) · [Testing](docs/TESTING.md)
+- [Contributing](docs/CONTRIBUTING.md) · [Git Flow](docs/GITFLOW.md) · [Troubleshooting](docs/TROUBLESHOOTING.md)
+
+Índice completo en [`docs/README.md`](docs/README.md).
+
 ## Inicio rápido
 
 ### Requisitos
@@ -228,6 +239,20 @@ npm run clean:scaffolding -- --dry-run --verbose
 | Core | `auth.service`, `auth.guard`, `auth.interceptor`, `user.model` |
 
 Adicionalmente reconstruye con stubs limpios: `app.module.ts`, `schema.prisma`, `app.routes.ts` y `app.config.ts`.
+
+### Personalización de la documentación
+
+Al final del proceso, `clean-scaffolding` ofrece **personalizar `docs/`** reemplazando el nombre
+genérico `Cusco`/`cusco` por el de tu proyecto. También podés correrlo por separado en cualquier momento:
+
+```bash
+# Autodetecta el nombre desde package.json / git origin / carpeta
+bash scripts/personalize-docs.sh --dry-run     # preview
+bash scripts/personalize-docs.sh               # aplica
+
+# O fijándolo a mano
+PROJECT_NAME="MiApp" PROJECT_SLUG="miapp" bash scripts/personalize-docs.sh
+```
 
 ### Variables de entorno
 

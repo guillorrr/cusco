@@ -767,6 +767,49 @@ clean_empty_dirs() {
 }
 
 #######################################
+# Personaliza la documentacion (docs/) reemplazando el nombre del scaffold
+# por el del fork. Delega en scripts/personalize-docs.sh.
+#######################################
+personalize_docs() {
+    local script="$SCRIPT_DIR/personalize-docs.sh"
+    [[ -f "$script" ]] || return 0
+    [[ -d "$PROJECT_ROOT/docs" ]] || return 0
+
+    local args=()
+    [[ "$DRY_RUN" == "true" ]] && args+=("--dry-run")
+
+    # Modo automatico: autodetecta nombre/slug y reemplaza sin preguntar
+    if [[ "$AUTO_YES" == "true" ]]; then
+        echo ""
+        echo -e "${BOLD}Personalizando documentacion (docs/)...${NC}"
+        bash "$script" "${args[@]}" || true
+        return 0
+    fi
+
+    echo ""
+    echo -e "${CYAN}===============================================${NC}"
+    echo -e "${BOLD}Personalizar la documentacion de docs/?${NC}"
+    echo -e "${DIM}Reemplaza 'Cusco'/'cusco' por el nombre de tu proyecto.${NC}"
+    echo -n "Personalizar ahora? [s/N] > "
+    read -r resp </dev/tty
+    case "$resp" in
+        s|S|y|Y) ;;
+        *)
+            echo -e "${BLUE}->${NC} Documentacion sin cambios."
+            echo -e "${DIM}    Podes hacerlo luego con: bash scripts/personalize-docs.sh${NC}"
+            return 0
+            ;;
+    esac
+
+    echo -n "Nombre del proyecto (ej: MiApp) [enter = autodetectar] > "
+    read -r pname </dev/tty
+    echo -n "Slug en minusculas (ej: miapp) [enter = autodetectar] > "
+    read -r pslug </dev/tty
+
+    PROJECT_NAME="${pname}" PROJECT_SLUG="${pslug}" bash "$script" "${args[@]}" || true
+}
+
+#######################################
 # Muestra el resumen final
 #######################################
 show_summary() {
@@ -863,6 +906,7 @@ main() {
         clean_backend_auxiliary
         clean_frontend_auxiliary
         clean_empty_dirs
+        personalize_docs
         show_summary
         exit 0
     fi
@@ -893,6 +937,9 @@ main() {
 
     # Limpiar directorios vacios
     clean_empty_dirs
+
+    # Personalizar la documentacion con el nombre del fork
+    personalize_docs
 
     # Mostrar resumen
     show_summary
