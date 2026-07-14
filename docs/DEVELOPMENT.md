@@ -271,7 +271,9 @@ Para activarlo:
 3. Opcional — verificá LFS antes de cada push agregando un hook `.husky/pre-push`:
 
    ```sh
+   # PATH para clientes git de escritorio con PATH mínimo; nvm si node lo maneja.
    export PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
+   [ -s "$HOME/.nvm/nvm.sh" ] && . "$HOME/.nvm/nvm.sh"
    command -v git-lfs >/dev/null 2>&1 || { echo >&2 "git-lfs no encontrado. Instalalo (apt install git-lfs / brew install git-lfs)."; exit 2; }
    git lfs pre-push "$@"
    ```
