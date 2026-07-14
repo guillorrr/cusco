@@ -1,0 +1,26 @@
+# Protege las ramas compartidas (main, develop) contra:
+#   1. Push directo    → forzás a pasar por un Pull Request.
+#   2. Borrado         → no se borran desde local.
+#   3. Force / non-ff  → cualquier reescritura de historia queda bloqueada.
+# En una emergencia real se saltea con `git push --no-verify` (no recomendado).
+protected="main develop"
+zero="0000000000000000000000000000000000000000"
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+	branch="${remote_ref#refs/heads/}"
+	case " $protected " in
+	*" $branch "*) ;;
+	*) continue ;;
+	esac
+
+	if [ "$local_sha" = "$zero" ]; then
+		echo "✋ pre-push: borrar la rama compartida '$branch' está bloqueado." >&2
+		exit 1
+	fi
+
+	echo "✋ pre-push: el push directo a '$branch' está bloqueado; abrí un Pull Request." >&2
+	echo "   Ramas protegidas: $protected · emergencia: git push --no-verify" >&2
+	exit 1
+done
+
+exit 0
