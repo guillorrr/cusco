@@ -17,15 +17,17 @@ está (o estuvo) en producción.
 
 ## Ramas temporales (short-lived)
 
-| Prefijo     | Sale de    | Se mergea en             | Para qué                                                |
-| ----------- | ---------- | ------------------------ | ------------------------------------------------------- |
-| `feature/*` | `develop`  | `develop`                | Funcionalidad nueva, refactors, documentación          |
-| `release/*` | `develop`  | `main` **y** `develop`   | Estabilizar una versión (bump de versión, fixes finales) |
-| `hotfix/*`  | `main`     | `main` **y** `develop`   | Arreglo urgente que no puede esperar al próximo release |
+| Prefijo                                     | Sale de    | Se mergea en             | Para qué                                                |
+| ------------------------------------------- | ---------- | ------------------------ | ------------------------------------------------------- |
+| `feat/*`, `fix/*`, `docs/*`, `chore/*`, `refactor/*`, … | `develop`  | `develop`                | Trabajo cotidiano: funcionalidad nueva, arreglos, docs, mantenimiento |
+| `release/*`                                 | `develop`  | `main` **y** `develop`   | Estabilizar una versión (bump de versión, fixes finales) |
+| `hotfix/*`                                  | `main`     | `main` **y** `develop`   | Arreglo urgente que no puede esperar al próximo release |
 
-`chore/*` y `fix/*` se aceptan como alias cosméticos de `feature/*` cuando el
-cambio no es realmente una "feature" pero sigue el mismo flujo (sale de
-`develop` y vuelve a `develop`).
+El prefijo de las ramas de trabajo sigue el **tipo de Conventional Commits** del
+cambio (`feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `style`, `perf`,
+`ci`, `build` — ver [CONTRIBUTING.md](CONTRIBUTING.md)). Todas siguen el mismo
+flujo: salen de `develop` y vuelven a `develop`. Solo `release/*` y `hotfix/*`
+tocan `main`.
 
 ### ¿Por qué `release/*` y `hotfix/*` se mergean en dos ramas?
 
@@ -35,14 +37,14 @@ como en la línea de desarrollo (`develop`), para que el próximo release no
 
 ## Comandos del día a día
 
-### Empezar una feature
+### Empezar una rama de trabajo
 
 ```sh
 git checkout develop
 git pull origin develop
-git checkout -b feature/descripcion-corta
+git checkout -b feat/descripcion-corta   # o fix/…, docs/…, chore/… según el tipo
 # … trabajás, hacés commits …
-git push -u origin feature/descripcion-corta
+git push -u origin feat/descripcion-corta
 gh pr create --base develop --fill
 ```
 
@@ -88,13 +90,13 @@ vez que se conoce el entorno destino.
 
 ## Protección de ramas
 
-El proyecto **no trae protección server-side ni un hook `pre-push`** por
-defecto: los únicos git hooks presentes son `pre-commit` y `commit-msg` (ver
-[CONTRIBUTING.md](CONTRIBUTING.md)). La regla de no pushear directo a `main` /
-`develop` se sostiene por convención del equipo, reforzada por los gates de la
-CI.
+El repo trae un hook local `.husky/pre-push` que bloquea pushear directo a
+`main` / `develop` (ver Opción B). **No** trae protección server-side por
+defecto: eso se configura por fork, según el plan de GitHub. Los git hooks
+presentes son `pre-commit`, `commit-msg` y `pre-push` (ver
+[CONTRIBUTING.md](CONTRIBUTING.md)).
 
-Si querés endurecerlo, hay dos caminos (ambos **opcionales**):
+Para endurecerlo aún más, hay dos caminos complementarios:
 
 ### Opción A — Protección server-side (recomendada)
 
@@ -113,16 +115,17 @@ Hoy ese archivo **no existe** en el repo; lo agregás vos si tomás este camino.
 
 ### Opción B — Protección local con un hook `pre-push`
 
-Como alternativa (o complemento) podés agregar un hook `.husky/pre-push` que
-bloquee, por ejemplo:
+El repo **ya incluye** `.husky/pre-push`, que sobre las ramas compartidas
+(`main` y `develop`) bloquea:
 
-1. Cualquier push directo a `main` o `develop` (forzando a pasar por PR).
-2. El borrado de `main` o `develop`.
-3. Pushes con `--force` (no fast-forward) sobre ramas compartidas.
+1. Cualquier push directo (forzando a pasar por PR).
+2. El borrado de la rama.
+3. Pushes con `--force` / non-fast-forward (quedan cubiertos: todo push directo
+   a esas ramas se rechaza).
 
-Este hook **tampoco existe hoy** en el repo; es algo que podés sumar si querés
-la protección sin depender de GitHub. En una emergencia, un hook local se
-saltea con `git push --no-verify` (no recomendado).
+Se activa solo con el resto de los hooks al correr `npm install` en la raíz. No
+depende de GitHub, así que funciona en cualquier fork sin configuración extra.
+En una emergencia real se saltea con `git push --no-verify` (no recomendado).
 
 ## Commits
 

@@ -5,7 +5,7 @@ cómo abrir un Pull Request en el proyecto. Está pensada para que cualquiera
 —incluso si recién empieza— pueda contribuir sin romper nada.
 
 Si todavía no conocés el modelo de ramas (qué es `main`, `develop`,
-`feature/*`, etc.), leé primero [GITFLOW.md](GITFLOW.md).
+`feat/*`, `fix/*`, etc.), leé primero [GITFLOW.md](GITFLOW.md).
 
 ## Commits
 
@@ -91,12 +91,13 @@ desactivada no pueda autenticarse.
 ## Hooks (Husky)
 
 Husky instala los git hooks automáticamente al correr `npm install` (vía el
-script `prepare`). En este repo existen **dos** hooks:
+script `prepare`). En este repo existen **tres** hooks:
 
 | Hook         | Acción                                                                  |
 |--------------|-------------------------------------------------------------------------|
 | `pre-commit` | `npx lint-staged` — corre Prettier + ESLint solo sobre los archivos staged |
 | `commit-msg` | `commitlint` — valida el mensaje contra `commitlint.config.js`          |
+| `pre-push`   | bloquea push directo, borrado y force-push sobre `main` / `develop` (ver [GITFLOW.md](GITFLOW.md#protección-de-ramas)) |
 
 ### Qué hace `lint-staged`
 
@@ -112,22 +113,24 @@ se ejecuta entrando a la carpeta correspondiente.
 
 ### Saltear los hooks
 
-Existe `git commit --no-verify` para hacer bypass, pero **no se recomienda**.
-Si un hook falla, **arreglá la causa** en lugar de saltearlo.
+Existe `git commit --no-verify` (y `git push --no-verify` para el `pre-push`)
+para hacer bypass, pero **no se recomienda**. Si un hook falla, **arreglá la
+causa** en lugar de saltearlo.
 
 ## Flujo de Pull Request
 
 El proyecto usa Git Flow (ver [GITFLOW.md](GITFLOW.md)). El flujo típico para
-una feature:
+un cambio:
 
-1. Branchá desde `develop`:
-   `git checkout develop && git pull && git checkout -b feature/descripcion-corta`.
+1. Branchá desde `develop` con el prefijo del tipo de Conventional Commits
+   (`feat/`, `fix/`, `docs/`, `chore/`, …):
+   `git checkout develop && git pull && git checkout -b feat/descripcion-corta`.
 2. Hacé commits chicos y temáticos. Si un cambio mezcla dos temas, partilo en
    dos commits.
 3. Antes de pushear, asegurate de que lint y tests pasan localmente:
    `npm run lint && npm test`.
 4. Pusheá y abrí el PR contra `develop`:
-   `git push -u origin feature/descripcion-corta` y luego `gh pr create --base develop --fill`.
+   `git push -u origin feat/descripcion-corta` y luego `gh pr create --base develop --fill`.
 5. La CI (Bitbucket Pipelines) corre automáticamente lint + test + build para
    `api` y `frontend`. El PR no debería mergearse con la CI en rojo.
 6. Una vez aprobado el review y con la CI en verde, se mergea.
