@@ -9,25 +9,24 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
   standalone: true,
   imports: [NgClass],
   template: `
-    <button
-      [ngClass]="classes"
-      [disabled]="disabled"
-      [type]="type"
-      (click)="onClick.emit($event)"
-    >
+    <button [ngClass]="classes" [disabled]="disabled" [type]="type" (click)="clicked.emit($event)">
       <ng-content />
     </button>
   `,
-  styles: [`
-    :host { display: inline-block; }
-  `],
+  styles: [
+    `
+      :host {
+        display: inline-block;
+      }
+    `,
+  ],
 })
 export class ButtonComponent {
   @Input() variant: ButtonVariant = 'primary';
   @Input() size: ButtonSize = 'md';
   @Input() disabled = false;
   @Input() type: 'button' | 'submit' | 'reset' = 'button';
-  @Output() onClick = new EventEmitter<Event>();
+  @Output() clicked = new EventEmitter<Event>();
 
   get classes(): string[] {
     return [
