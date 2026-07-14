@@ -46,6 +46,9 @@ src/api/prisma/*.db-journal
 # Storybook
 storybook-static/
 
+# Claude Code (personal settings/permissions stay local)
+.claude/settings.local.json
+
 # Misc
 *.tgz
 .cache/
