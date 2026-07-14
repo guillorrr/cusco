@@ -42,7 +42,6 @@
     "typescript-eslint": "^8.0.0",
     "@storybook/angular": "^10.2.0",
     "@storybook/addon-a11y": "^10.2.0",
-    "@types/react": "^19.0.0",
     "storybook": "^10.2.0"
   }
 }
