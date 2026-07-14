@@ -8,6 +8,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "lint": "eslint .",
     "storybook": "storybook dev -p 6006 --host 0.0.0.0 --ci",
     "storybook:build": "storybook build -o storybook-static"
   },
@@ -30,7 +31,7 @@
     "@angular/cli": "^21.0.0",
     "@angular/compiler-cli": "^21.0.0",
     "@types/jasmine": "~5.1.0",
-    "angular-eslint": "^19.0.0",
+    "angular-eslint": "^21.4.0",
     "eslint": "^9.0.0",
     "jasmine-core": "~5.4.0",
     "karma": "~6.4.0",
@@ -42,7 +43,6 @@
     "typescript-eslint": "^8.0.0",
     "@storybook/angular": "^10.2.0",
     "@storybook/addon-a11y": "^10.2.0",
-    "@types/react": "^19.0.0",
     "storybook": "^10.2.0"
   }
 }

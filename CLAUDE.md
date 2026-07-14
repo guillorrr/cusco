@@ -102,13 +102,20 @@ npm run dev                 # start + follow logs
 npm run prisma:migrate      # run database migrations
 npm run prisma:seed         # seed initial data
 npm run prisma:studio       # visual DB editor
-npm run lint                # lint both api + frontend
+npm run lint                # lint both api + frontend (in docker)
+npm run lint:host           # lint both api + frontend (on host, no docker)
 npm run test                # test both api + frontend
 npm run build               # production build
 npm run docker:rebuild      # full rebuild from scratch
 npm run storybook           # launch Storybook (port 6006)
 npm run storybook:build     # build static Storybook
 ```
+
+### Pre-commit hooks
+
+Husky + lint-staged + commitlint are declared in `package.json` and `.husky/`. They activate automatically on `npm install` at the repo root (which runs `"prepare": "husky"` and creates `.husky/_/`). Hooks run on the **host** (Git executes hooks outside any container), so the host needs the root devDependencies installed. If `npm install` was run with `--omit=dev` or only at workspace level, `husky` will be missing from `node_modules/` and hooks will silently not fire — re-run `npm install` at the root to fix.
+
+`lint-staged` runs `prettier --write` + `eslint --fix` on staged files using host binaries (not docker), keeping commit time fast. Docker-based `npm run lint` is reserved for full-project sweeps and CI; `npm run lint:host` runs the same lint on the host without docker.
 
 ## API
 

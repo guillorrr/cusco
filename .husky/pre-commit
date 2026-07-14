@@ -1,1 +1,5 @@
-npx lint-staged
+# Make node/npm resolvable in GUI git clients that start with a minimal PATH.
+export PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
+# Load nvm if present so `node` resolves when it is managed by nvm.
+[ -s "$HOME/.nvm/nvm.sh" ] && . "$HOME/.nvm/nvm.sh"
+./node_modules/.bin/lint-staged

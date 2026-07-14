@@ -245,6 +245,45 @@ docker compose exec frontend npx ng g c atoms/<nombre> --standalone
 Convenciones, flujo de ramas y proceso de PR en [CONTRIBUTING.md](CONTRIBUTING.md)
 y [GITFLOW.md](GITFLOW.md). Roles de usuario en [ROLES.md](ROLES.md).
 
+## Git LFS para binarios pesados (opcional)
+
+El scaffold **no** usa [Git LFS](https://git-lfs.com/) por defecto. Actívalo sólo
+si tu proyecto va a versionar archivos binarios/pesados (CSV o ZIP de import,
+imágenes, videos, PDFs, dumps): git guarda cada versión completa de cada archivo
+en el historial, así que un binario que cambia seguido infla el `.git` para
+siempre —aunque después lo borres— y cada `clone` se lo baja. LFS guarda en su
+lugar un puntero de texto y mueve el archivo real a un almacén aparte.
+
+Para activarlo:
+
+1. Instalá el cliente: `apt install git-lfs` / `brew install git-lfs`, luego
+   `git lfs install` una vez por máquina.
+
+2. Declará qué archivos van por LFS en `.gitattributes` (ajustá los patrones a
+   tu proyecto):
+
+   ```gitattributes
+   # Git LFS para datos de import pesados
+   ruta/a/tus/datos/*.csv filter=lfs diff=lfs merge=lfs -text
+   ruta/a/tus/datos/*.zip filter=lfs diff=lfs merge=lfs -text
+   ```
+
+3. Opcional — verificá LFS antes de cada push agregando un hook `.husky/pre-push`:
+
+   ```sh
+   # PATH para clientes git de escritorio con PATH mínimo; nvm si node lo maneja.
+   export PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
+   [ -s "$HOME/.nvm/nvm.sh" ] && . "$HOME/.nvm/nvm.sh"
+   command -v git-lfs >/dev/null 2>&1 || { echo >&2 "git-lfs no encontrado. Instalalo (apt install git-lfs / brew install git-lfs)."; exit 2; }
+   git lfs pre-push "$@"
+   ```
+
+   > Ojo: este hook **exige** `git-lfs` instalado (falla con `exit 2` si no está),
+   > así que sumalo sólo cuando el equipo realmente vaya a usar LFS.
+
+Los archivos que ya estaban commiteados antes de agregar la regla necesitan
+`git lfs migrate` para moverse al almacén; los nuevos ya entran por LFS solos.
+
 ## ¿Algo no levanta?
 
 Si un contenedor no arranca, el hot-reload no toma cambios o la base quedó en mal
