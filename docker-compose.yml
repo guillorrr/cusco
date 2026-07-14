@@ -21,7 +21,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - ${APP_NAME}-network
+      - app-network
 
   # ---------------------------------------------------------------------------
   # API - NestJS
@@ -53,7 +53,7 @@ services:
       - api-node-modules:/app/node_modules
     command: npm run start:dev
     networks:
-      - ${APP_NAME}-network
+      - app-network
 
   # ---------------------------------------------------------------------------
   # Frontend - Angular
@@ -75,7 +75,7 @@ services:
       - frontend-node-modules:/app/node_modules
     command: npx ng serve --host 0.0.0.0 --poll 2000
     networks:
-      - ${APP_NAME}-network
+      - app-network
 
   # ---------------------------------------------------------------------------
   # Storybook - Component Library
@@ -94,7 +94,7 @@ services:
       - ./src/frontend/src:/app/src:ro
       - ./src/frontend/.storybook:/app/.storybook:ro
     networks:
-      - ${APP_NAME}-network
+      - app-network
 
   # ---------------------------------------------------------------------------
   # Nginx - Reverse Proxy
@@ -120,7 +120,7 @@ services:
       CLIENT_MAX_BODY_SIZE: ${CLIENT_MAX_BODY_SIZE:-32M}
       SWAGGER_EDGE_POLICY: ""
     networks:
-      - ${APP_NAME}-network
+      - app-network
 
   # ---------------------------------------------------------------------------
   # Redis - Cache
@@ -134,7 +134,7 @@ services:
     volumes:
       - redis-data:/data
     networks:
-      - ${APP_NAME}-network
+      - app-network
 
   # ---------------------------------------------------------------------------
   # pgAdmin - Database UI
@@ -153,7 +153,7 @@ services:
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     networks:
-      - ${APP_NAME}-network
+      - app-network
 
   # ---------------------------------------------------------------------------
   # Mailhog - Email Testing
@@ -165,7 +165,7 @@ services:
       - "${FORWARD_MAILHOG_SMTP_PORT:-1025}:1025"
       - "${FORWARD_MAILHOG_PORT:-8025}:8025"
     networks:
-      - ${APP_NAME}-network
+      - app-network
 
   # ---------------------------------------------------------------------------
   # MkCert - SSL Certificates
@@ -180,21 +180,34 @@ services:
     environment:
       DOMAIN: ${DOMAIN}
     networks:
-      - ${APP_NAME}-network
+      - app-network
 
 volumes:
+  # Same convention as the network below: the key is the internal alias the
+  # services reference, `name` is the real volume name in Docker. Without an
+  # explicit `name`, Compose prefixes the key with the project name — which
+  # defaults to the directory basename, so renaming or cloning the repo into a
+  # different folder would silently point at brand-new, empty volumes.
   db-data:
+    name: ${APP_NAME}-db-data
     driver: local
   api-node-modules:
+    name: ${APP_NAME}-api-node-modules
     driver: local
   frontend-node-modules:
+    name: ${APP_NAME}-frontend-node-modules
     driver: local
   redis-data:
+    name: ${APP_NAME}-redis-data
     driver: local
   pgadmin-data:
+    name: ${APP_NAME}-pgadmin-data
     driver: local
 
 networks:
-  cusco-network:
+  # Key is the internal alias services reference — keep it stable and
+  # independent of APP_NAME. `name` is the actual network name in Docker,
+  # and that's where APP_NAME is substituted.
+  app-network:
     name: ${APP_NAME}-network
     driver: bridge
