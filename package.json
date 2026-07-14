@@ -52,6 +52,12 @@
     "lint:fix": "npm run lint:fix:api && npm run lint:fix:frontend",
     "lint:fix:api": "docker compose exec api npm run lint -- --fix",
     "lint:fix:frontend": "docker compose exec frontend npx ng lint --fix",
+    "lint:host": "npm run lint:host:api && npm run lint:host:frontend",
+    "lint:host:api": "npm --workspace src/api run lint",
+    "lint:host:frontend": "npm --workspace src/frontend run lint",
+    "lint:host:fix": "npm run lint:host:fix:api && npm run lint:host:fix:frontend",
+    "lint:host:fix:api": "npm --workspace src/api run lint -- --fix",
+    "lint:host:fix:frontend": "npm --workspace src/frontend exec ng lint -- --fix",
 
     "test": "npm run test:api && npm run test:frontend",
     "test:api": "docker compose exec api npm run test",
