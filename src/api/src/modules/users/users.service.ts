@@ -4,7 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { paginate } from '../../common/helpers/pagination.helper';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { APP_CONSTANTS } from '../../core/config/constants';
 
 @Injectable()
@@ -26,7 +26,15 @@ export class UsersService {
       this.prisma.user.findMany({
         skip,
         take: limit,
-        select: { id: true, email: true, firstName: true, lastName: true, role: true, isActive: true, createdAt: true },
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          role: true,
+          isActive: true,
+          createdAt: true,
+        },
       }),
       this.prisma.user.count(),
     ]);
@@ -37,7 +45,15 @@ export class UsersService {
   async findOne(id: number) {
     const user = await this.prisma.user.findUnique({
       where: { id },
-      select: { id: true, email: true, firstName: true, lastName: true, role: true, isActive: true, createdAt: true },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        isActive: true,
+        createdAt: true,
+      },
     });
     if (!user) throw new NotFoundException(`User #${id} not found`);
     return user;
