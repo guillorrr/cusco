@@ -14,8 +14,10 @@ RUN npm install
 # Copy source code
 COPY src/api/ .
 
-# Generate Prisma client
-RUN npx prisma generate 2>/dev/null || true
+# Generate Prisma client. Must not be silenced: if it fails, the image ships
+# without a client and the only symptom is the API failing to compile at
+# runtime, with nothing in the build log pointing here.
+RUN npx prisma generate
 
 EXPOSE 3000
 
