@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { ApiService } from './api.service';
 import { tap } from 'rxjs';
 
@@ -9,13 +9,13 @@ interface LoginResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly TOKEN_KEY = 'cusco_token';
-  private readonly USER_ROLE_KEY = 'cusco_user_role';
+  private readonly api = inject(ApiService);
+
+  private readonly TOKEN_KEY = 'auth_token';
+  private readonly USER_ROLE_KEY = 'auth_user_role';
 
   isAuthenticated = signal(this.hasToken());
   currentUserRole = signal<string>(this.getStoredRole());
-
-  constructor(private api: ApiService) {}
 
   login(email: string, password: string) {
     return this.api.post<LoginResponse>('auth/login', { email, password }).pipe(
