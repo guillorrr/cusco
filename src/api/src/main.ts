@@ -22,9 +22,10 @@ async function bootstrap() {
   );
 
   // Swagger documentation
+  const appName = configService.get<string>('APP_NAME', 'App');
   const config = new DocumentBuilder()
-    .setTitle('Cusco API')
-    .setDescription('Cusco API documentation')
+    .setTitle(`${appName} API`)
+    .setDescription(`${appName} API documentation`)
     .setVersion('1.0')
     .addBearerAuth()
     .build();

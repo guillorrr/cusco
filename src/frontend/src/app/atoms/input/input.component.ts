@@ -49,8 +49,9 @@ export class InputComponent implements ControlValueAccessor {
   @Input() disabled = false;
 
   value = '';
-  onChange: (value: string) => void = () => {};
-  onTouched: () => void = () => {};
+  // No-op until the forms API registers the real callbacks.
+  onChange: (value: string) => void = () => undefined;
+  onTouched: () => void = () => undefined;
 
   onValueChange(val: string) {
     this.value = val;
