@@ -11,6 +11,10 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
+    // npm workspaces hoists every @types package to the monorepo root, and TS
+    // auto-includes all of them. Without this, @types/jasmine (pulled in by the
+    // frontend) shadows the jest globals and the specs fail to compile.
+    "types": ["node", "jest"],
     "skipLibCheck": true,
     "strictNullChecks": true,
     "noImplicitAny": true,
