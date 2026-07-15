@@ -2,6 +2,11 @@
 // Cusco - Global Styles
 // =============================================================================
 
+// Bootstrap. Resolved as a package specifier so it works both on the host
+// (npm workspaces hoists node_modules to the monorepo root) and in Docker
+// (deps installed in /app/node_modules). Must stay first to keep the cascade.
+@use 'bootstrap/scss/bootstrap';
+
 // Variables
 @use 'app/core/styles/variables' as *;
 
