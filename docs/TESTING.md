@@ -116,61 +116,59 @@ describe('UsersService', () => {
 });
 ```
 
-### Ejemplo: `AuthService` (dos dependencias mockeadas)
+### Ejemplo: `AuthService` (suite real del repo)
 
-El `AuthService` real (`src/api/src/modules/auth/auth.service.ts`) depende de `UsersService` y de `JwtService`. En `login()` busca por email, compara la contraseña con `bcrypt.compare`, y firma un JWT con `{ sub, email, role }`. Mockeamos ambas dependencias:
+Esta suite **existe de verdad** en `src/api/src/modules/auth/auth.service.spec.ts`; abrila
+para verla entera. El `AuthService` depende de `UsersService`, `JwtService` y
+`PrismaService`, y los tres se mockean:
 
 ```ts
 import { Test } from '@nestjs/testing';
-import { UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
-import { UsersService } from '@modules/users/users.service';
+import { UsersService } from '../users/users.service';
+import { PrismaService } from '../../core/setup/prisma.service';
 
-describe('AuthService', () => {
-  let service: AuthService;
+const usersMock = { findByEmail: jest.fn(), findOne: jest.fn() };
+const jwtMock = { sign: jest.fn().mockReturnValue('signed.jwt.token') };
+const prismaMock = {
+  refreshToken: { findUnique: jest.fn(), create: jest.fn(), update: jest.fn(), updateMany: jest.fn() },
+};
 
-  const usersMock = { findByEmail: jest.fn() };
-  const jwtMock = { sign: jest.fn().mockReturnValue('signed.jwt.token') };
+const mod = await Test.createTestingModule({
+  providers: [
+    AuthService,
+    { provide: UsersService, useValue: usersMock },
+    { provide: JwtService, useValue: jwtMock },
+    { provide: PrismaService, useValue: prismaMock },
+  ],
+}).compile();
+```
 
-  beforeEach(async () => {
-    jest.clearAllMocks();
-    const mod = await Test.createTestingModule({
-      providers: [
-        AuthService,
-        { provide: UsersService, useValue: usersMock },
-        { provide: JwtService, useValue: jwtMock },
-      ],
-    }).compile();
-    service = mod.get(AuthService);
+El caso que más valor tiene es el de **reuso de un refresh token revocado**: comprueba que
+se revoque la familia entera del usuario y que no se emita ningún par nuevo (el porqué está
+en [auth-refresh-tokens.md](auth-refresh-tokens.md)).
+
+```ts
+it('revokes every live token of the user when a revoked token is replayed', async () => {
+  prismaMock.refreshToken.findUnique.mockResolvedValue({
+    id: 3, userId: 42, revokedAt: new Date('2026-01-01T00:00:00Z'),
+    expiresAt: hoursFromNow(24), user,
   });
 
-  it('devuelve access_token y datos del usuario con credenciales válidas', async () => {
-    usersMock.findByEmail.mockResolvedValue({
-      id: 1,
-      email: 'demo@cusco.local',
-      password: 'hash',
-      role: 'USER',
-    });
-    jest.spyOn(bcrypt, 'compare').mockResolvedValue(true as never);
+  await expect(service.refresh({ refresh_token: 'stolen' })).rejects.toThrow(UnauthorizedException);
 
-    const result = await service.login({ email: 'demo@cusco.local', password: 'secret123' });
-
-    expect(result.access_token).toBe('signed.jwt.token');
-    expect(result.user).toEqual({ id: 1, email: 'demo@cusco.local', role: 'USER' });
-    expect(jwtMock.sign).toHaveBeenCalledWith({ sub: 1, email: 'demo@cusco.local', role: 'USER' });
+  expect(prismaMock.refreshToken.updateMany).toHaveBeenCalledWith({
+    where: { userId: 42, revokedAt: null },
+    data: { revokedAt: expect.any(Date) },
   });
-
-  it('rechaza credenciales inválidas con UnauthorizedException', async () => {
-    usersMock.findByEmail.mockResolvedValue(null);
-
-    await expect(
-      service.login({ email: 'nadie@cusco.local', password: 'x' }),
-    ).rejects.toThrow(UnauthorizedException);
-  });
+  expect(prismaMock.refreshToken.create).not.toHaveBeenCalled();
 });
 ```
+
+> **Importá con rutas relativas, no con los alias.** Los `@core/*` y `@modules/*` existen en
+> el `tsconfig.json` del API, pero Jest no tiene `moduleNameMapper`, así que dentro de un
+> `.spec.ts` no resuelven. El código del repo también usa rutas relativas.
 
 ## Frontend (Karma + Jasmine)
 

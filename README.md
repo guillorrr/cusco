@@ -102,7 +102,7 @@ La carpeta [`docs/`](docs/) tiene la documentación extendida y explicada, pensa
 quien nunca usó NestJS, Prisma, Swagger o Angular:
 
 - [Arquitectura](docs/ARCHITECTURE.md) · [Setup y desarrollo](docs/DEVELOPMENT.md) · [Docker](docs/DOCKER.md)
-- [Storybook](docs/STORYBOOK.md) · [Roles y guards](docs/ROLES.md) · [Testing](docs/TESTING.md)
+- [Storybook](docs/STORYBOOK.md) · [Roles y guards](docs/ROLES.md) · [Access + refresh tokens](docs/auth-refresh-tokens.md) · [Testing](docs/TESTING.md)
 - [Contributing](docs/CONTRIBUTING.md) · [Git Flow](docs/GITFLOW.md) · [Troubleshooting](docs/TROUBLESHOOTING.md)
 
 Índice completo en [`docs/README.md`](docs/README.md).
@@ -370,5 +370,8 @@ modules/{name}/
 - Prefijo global: `/api/v1`
 - Swagger auto-generado en `/api/docs`
 - Validación: `class-validator` + `ValidationPipe` global
-- Auth: JWT Bearer token vía header `Authorization`
+- Auth: JWT Bearer token vía header `Authorization`. `POST /auth/login` devuelve un access
+  token de vida corta y un refresh token de vida larga; `POST /auth/refresh` lo renueva con
+  rotación, `POST /auth/logout` lo revoca y `GET /auth/me` devuelve el usuario autenticado.
+  Ver [Access + refresh tokens](docs/auth-refresh-tokens.md).
 - Paginación: `?page=1&limit=10` en todos los listados

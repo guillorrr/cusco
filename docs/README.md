@@ -32,6 +32,7 @@ Si es tu primer día en el proyecto, leé en este orden:
 |-----|--------------|
 | [STORYBOOK.md](STORYBOOK.md) | Desarrollo y validación de componentes Angular de forma aislada. |
 | [ROLES.md](ROLES.md) | Patrón de control de acceso (RBAC): roles, guards y decoradores de autenticación. |
+| [auth-refresh-tokens.md](auth-refresh-tokens.md) | Sesión con access + refresh tokens: rotación, revocación y detección de reuso. |
 | [TESTING.md](TESTING.md) | Tests unitarios y e2e en backend (Jest) y frontend, con ejemplos. |
 
 ### Operaciones
