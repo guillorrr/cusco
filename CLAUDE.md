@@ -122,6 +122,11 @@ Husky + lint-staged + commitlint are declared in `package.json` and `.husky/`. T
 - Base URL: `/api/v1`
 - Swagger docs: `/api/docs`
 - Auth: JWT Bearer token via `Authorization` header
+- Session endpoints: `POST /auth/login` returns a short-lived access token plus a
+  long-lived refresh token; `POST /auth/refresh` rotates the pair (revoking the old token
+  and detecting reuse); `POST /auth/logout` revokes it; `GET /auth/me` returns the
+  authenticated user. Token TTLs live in `core/config/constants.ts` (`APP_CONSTANTS.AUTH`).
+  See [docs/auth-refresh-tokens.md](docs/auth-refresh-tokens.md).
 
 ## Docker Services
 
@@ -141,6 +146,7 @@ Husky + lint-staged + commitlint are declared in `package.json` and `.husky/`. T
 - `docker-compose.yml` — Service orchestration
 - `.env.example` — Environment template (copy to `.env`)
 - `src/api/prisma/schema.prisma` — Database schema (source of truth)
+- `src/api/prisma/migrations/` — Committed migration history; run `npm run prisma:migrate`
 - `src/api/src/app.module.ts` — Backend root module
 - `src/frontend/src/app/app.routes.ts` — Frontend routing
 - `src/frontend/src/app/app.config.ts` — Angular providers

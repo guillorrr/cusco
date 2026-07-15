@@ -69,18 +69,22 @@ enum Role {
 ### Al loguearse (`auth.service.ts`)
 
 `AuthService.login` busca el usuario por email, compara la contraseña con bcrypt y, si todo
-está bien, firma un JWT con `{ sub, email, role }`:
+está bien, firma un JWT con `{ sub, email, role }` y lo devuelve junto a un refresh token:
 
 ```ts
-const payload = { sub: user.id, email: user.email, role: user.role };
 return {
-  access_token: this.jwtService.sign(payload),
+  access_token: this.jwtService.sign({ sub: user.id, email: user.email, role: user.role }),
+  refresh_token: refreshToken,
   user: { id: user.id, email: user.email, role: user.role },
 };
 ```
 
 El rol queda **dentro** del token. Eso significa que el rol viaja con el token hasta que el
 token expire.
+
+El `refresh_token` es lo que permite renovar el access token cuando expira, sin volver a
+pedir la contraseña. Cómo funciona la rotación y qué pasa si te roban uno está en
+[auth-refresh-tokens.md](auth-refresh-tokens.md).
 
 ### Al validar cada request (`strategies/jwt.strategy.ts`)
 
@@ -103,17 +107,20 @@ request.
 
 ### Cómo obtener el usuario en un handler
 
-Cusco **no** tiene un decorador `@CurrentUser`. El usuario autenticado se obtiene del
-request, que es donde Passport lo dejó. Por ejemplo:
+Usá el decorador `@CurrentUser`, que lee el usuario del request —que es donde Passport lo
+dejó— y te lo entrega tipado:
 
 ```ts
-import { Req } from '@nestjs/common';
+import { AuthenticatedUser, CurrentUser } from '../auth/decorators/current-user.decorator';
 
 @Get('algo')
-hacerAlgo(@Req() req) {
-  const user = req.user; // { id, email, role }
+hacerAlgo(@CurrentUser() user: AuthenticatedUser) {
+  // user: { id, email, role }
 }
 ```
+
+Es azúcar sobre `@Req() req` + `req.user`: no hace ninguna consulta extra ni valida nada,
+eso ya lo hizo el `JwtAuthGuard` antes de llegar al handler.
 
 ---
 

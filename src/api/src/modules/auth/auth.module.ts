@@ -9,6 +9,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { UsersModule } from '../users/users.module';
+import { APP_CONSTANTS } from '../../core/config/constants';
 
 @Module({
   imports: [
@@ -17,10 +18,17 @@ import { UsersModule } from '../users/users.module';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        secret: config.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: config.get<string>('JWT_EXPIRATION', '3600') + 's' },
-      }),
+      useFactory: (config: ConfigService) => {
+        // JWT_EXPIRATION is expressed in seconds; TOKEN_EXPIRATION is an
+        // ms-style string. The env var still wins when set.
+        const envExpiration = config.get<string>('JWT_EXPIRATION');
+        return {
+          secret: config.get<string>('JWT_SECRET'),
+          signOptions: {
+            expiresIn: envExpiration ? `${envExpiration}s` : APP_CONSTANTS.AUTH.TOKEN_EXPIRATION,
+          },
+        };
+      },
     }),
   ],
   controllers: [AuthController],
