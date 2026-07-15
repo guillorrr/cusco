@@ -8,12 +8,6 @@
     "moduleResolution": "bundler"
   },
   "files": ["src/main.ts", ".storybook/preview.ts"],
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.d.ts",
-    ".storybook/**/*.ts"
-  ],
-  "exclude": [
-    "src/**/*.spec.ts"
-  ]
+  "include": ["src/**/*.ts", "src/**/*.d.ts", ".storybook/**/*.ts"],
+  "exclude": ["src/**/*.spec.ts"]
 }

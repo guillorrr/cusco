@@ -2,7 +2,7 @@
  * Application-wide constants
  */
 export const APP_CONSTANTS = {
-  APP_NAME: 'cusco',
+  APP_NAME: process.env.APP_NAME ?? 'app',
   PAGINATION: {
     DEFAULT_PAGE: 1,
     DEFAULT_LIMIT: 10,

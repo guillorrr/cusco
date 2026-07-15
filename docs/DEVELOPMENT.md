@@ -98,7 +98,8 @@ necesita cambios en local.
 
 | Variable                  | Default                  | Para qué sirve                                              |
 |---------------------------|--------------------------|------------------------------------------------------------|
-| `APP_NAME`                | `cusco`                  | Prefijo de los nombres de contenedores y de la red Docker. |
+| `APP_NAME`                | `cusco`                  | Prefijo de los nombres de contenedores, de la red y de los volúmenes Docker. |
+| `COMPOSE_PROJECT_NAME`    | `${APP_NAME}`            | Nombre del proyecto Compose. Se deriva de `APP_NAME` para que nada dependa de cómo se llame el directorio del repo. |
 | `DOMAIN`                  | `cusco.local`            | Dominio para HTTPS local (nginx + mkcert).                 |
 | `NODE_ENV`               | `development`            | Modo de ejecución de Node.                                 |
 | `DB_NAME` / `DB_USER` / `DB_PASSWORD` | `cusco` / `cusco` / `cusco_secret` | Credenciales de Postgres en local (no usar en producción). |

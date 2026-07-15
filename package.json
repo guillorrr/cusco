@@ -81,11 +81,11 @@
   "lint-staged": {
     "src/api/**/*.ts": [
       "prettier --write",
-      "bash -c 'cd src/api && npx eslint --fix'"
+      "bash -c 'cd src/api && npx eslint --fix \"$@\"' --"
     ],
     "src/frontend/**/*.ts": [
       "prettier --write",
-      "bash -c 'cd src/frontend && npx eslint --fix'"
+      "bash -c 'cd src/frontend && npx eslint --fix \"$@\"' --"
     ],
     "src/**/*.{html,scss,json}": [
       "prettier --write"
