@@ -157,6 +157,20 @@ npm run prisma:studio     # GUI web para ver/editar la base (Prisma Studio, puer
 npm run prisma:reset      # ¡BORRA la base y reaplica todas las migraciones!
 ```
 
+El historial de migraciones vive versionado en `src/api/prisma/migrations/`. En una base
+vacía, `npm run prisma:migrate` las aplica todas y quedás listo.
+
+> **Si ya tenías una base local de antes de que se versionaran las migraciones**, Prisma va
+> a ver tablas que ninguna migración aplicada explica y va a frenar. Marcá la migración
+> inicial como ya aplicada, una sola vez:
+>
+> ```bash
+> docker compose exec api npx prisma migrate resolve --applied 20260715150208_init
+> ```
+>
+> A partir de ahí `npm run prisma:migrate` sigue solo. La alternativa, si no te importan los
+> datos locales, es `npm run prisma:reset`.
+
 ### Lint y tests
 
 ```bash

@@ -179,12 +179,18 @@ El flujo de login (en `auth.service.ts`) es directo:
 3. Si todo coincide, firma un **JWT** (*JSON Web Token*: un token firmado que
    el cliente guarda y reenvía en cada petición) con el payload
    `{ sub, email, role }`.
-4. Devuelve `{ access_token, user: { id, email, role } }`.
+4. Devuelve `{ access_token, refresh_token, user: { id, email, role } }`.
 
 En las peticiones siguientes, el cliente manda ese token en la cabecera
 `Authorization: Bearer <token>`. La `JwtStrategy` lo extrae, verifica firma y
 expiración con `JWT_SECRET`, y deja `{ id, email, role }` disponible en
 `request.user`.
+
+El `access_token` es de vida corta. Cuando expira, el cliente usa el
+`refresh_token` contra `POST /auth/refresh` para conseguir un par nuevo sin
+reingresar la contraseña. Los refresh tokens viven hasheados en la tabla
+`refresh_tokens`, rotan en cada uso y se revocan enteros ante un reuso: ver
+[auth-refresh-tokens.md](auth-refresh-tokens.md).
 
 ### Guards globales
 
